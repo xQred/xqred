@@ -1,0 +1,99 @@
+LCD PIC18
+#include <p18f4550.h>
+
+// Configuration Bits
+#pragma config FOSC = HS 
+#pragma config WDT = OFF 
+#pragma config LVP = OFF 
+#pragma config PBADEN = OFF
+
+#define RS PORTCbits.RC0
+#define RW PORTCbits.RC1
+#define EN PORTCbits.RC2
+
+void LCD_data(unsigned char data);
+void LCD_cmd(unsigned char cmd);
+void LCD_init();
+void delay(unsigned int time);
+
+void main() {
+    TRISD = 0x00; // Set PORTD as output for data
+    TRISC = 0x00; // Set PORTE as output for control pins
+
+    LCD_init();
+    LCD_cmd(0x80); // Move cursor to the beginning of the first line
+
+    LCD_data('L');
+    delay(25);
+    LCD_data('C');
+    delay(25);
+    LCD_data('D');
+    delay(25);
+    LCD_data('P');
+    delay(25);
+    LCD_data('I');
+    delay(25);
+    LCD_data('C');
+    delay(25);
+    LCD_data('1');
+    delay(25);
+    LCD_data('8');
+    
+    while (1); // Keep looping to prevent the program from exiting
+}
+
+void LCD_data(unsigned char data) {
+    PORTD = data; // Send data to the data port
+    RS = 1; // Set RS to 1 for data
+    RW = 0; // Set RW to 0 for write
+    EN = 1; // Enable LCD
+    delay(25);
+    EN = 0; // Disable LCD
+}
+
+void LCD_cmd(unsigned char cmd) {
+    PORTD = cmd; // Send command to the data port
+    RS = 0; // Set RS to 0 for command
+    RW = 0; // Set RW to 0 for write
+    EN = 1; // Enable LCD
+    delay(25);
+    EN = 0; // Disable LCD
+}
+
+void LCD_init() {
+    delay(15); // Wait for LCD to power up
+    LCD_cmd(0x38); // 8-bit mode, 2 lines, 5x7 matrix
+    delay(5);
+    LCD_cmd(0x01); // Clear display
+    delay(2);
+    LCD_cmd(0x06); // Increment cursor
+    delay(1);
+    LCD_cmd(0x0C); // Display on, cursor off
+    delay(1);
+    LCD_cmd(0x80); // Move cursor to the beginning of the first line
+    delay(1);
+}
+
+void delay(unsigned int time) {
+    int i, j;
+    for (i = 0; i < time; i++)
+        for (j = 0; j < 275; j++); // Simple delay loop
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
